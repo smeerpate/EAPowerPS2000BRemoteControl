@@ -15,6 +15,18 @@ namespace EAPowerPS2000BRemoteControl
         public Form1()
         {
             InitializeComponent();
+            txtComPort.Text = "COM3";
+            txtActVoltage.ReadOnly = true;
+            txtActCurrent.ReadOnly = true;
+            txtActCurrent.Text = "-";
+            txtActVoltage.Text = "-";
+            txtTargetCurrent.Text = "0";
+            txtTargetVoltage.Text = "0";
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
