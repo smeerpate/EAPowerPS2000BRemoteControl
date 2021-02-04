@@ -223,6 +223,10 @@ namespace EAPowerPS2000BRemoteControl
             this.lblStatusStr1.Size = new System.Drawing.Size(118, 17);
             this.lblStatusStr1.Text = "toolStripStatusLabel1";
             // 
+            // serialPort1
+            // 
+            this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            // 
             // btnDisconnect
             // 
             this.btnDisconnect.Location = new System.Drawing.Point(109, 47);

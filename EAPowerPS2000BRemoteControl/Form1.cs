@@ -22,6 +22,26 @@ namespace EAPowerPS2000BRemoteControl
             TODEVICE = 1,
         }
 
+        enum PS2000_OBJECT
+        {
+            DEVICETYPE = 0, // string
+            SERIALNUMBER = 1, // string
+            NOMVOLTAGE = 2, // float
+            NOMCURRENT = 3, // float
+            NOMPOWER = 4, // float
+            ARTICLENO = 6, // string
+            MANUFACTURER = 8, // string
+            SWVERSION = 9, // string
+            DEVCLASS = 19, // word
+            OVPTHRESH = 38, // word
+            OCPTHRESH = 39, // word
+            SETVOLTAGE = 50, // word
+            SETCURRENT = 51, // word
+            CONTROL = 54, // byte, byte
+            ACTSTATUS = 71, // byte,byte,word, word
+            MOMSTATUS = 72, // byte,byte,word, word 
+        }
+
         enum PS2000_CASTTYPE
         {
             ANSWER = 0,
@@ -99,6 +119,8 @@ namespace EAPowerPS2000BRemoteControl
             }
             serialPort1.Open();
             lblStatusStr1.Text = "Opened port " + serialPort1.PortName;
+
+            PS2000_GetActualValues();
         }
 
         private void btnDisonnect_Click(object sender, EventArgs e)
@@ -112,19 +134,29 @@ namespace EAPowerPS2000BRemoteControl
             lblStatusStr1.Text = "Comport is already closed";
         }
 
+        private void updateActualValueFieldsFromReply(byte[] abBuffer)
+        {
+            UInt16 uwTemp = 0;
 
-        private void PS2000_BuildTelegramToDevice(byte[] abDestBuffer, byte[] abData, byte bDataLength)
+            uwTemp = (UInt16)(abBuffer[4] | (abBuffer[5] << 8));
+            txtActVoltage.Text = PS2000_ConvertToRealValue(uwTemp, mdFullScaleVoltage).ToString();
+        }
+
+
+        private int PS2000_BuildQueryTelegramToDevice(byte[] abDestBuffer, byte dObjectCode, byte bExpectedReplyLength)
         {
             byte bTemp = 0;
+            UInt16 uwChecksum = 0;
+            int iLengthNBytes = 5;
 
             // Build start delimiter [0]
-            if (bDataLength == 0)
+            if (bExpectedReplyLength == 0)
             {
                 bTemp = 0;
             }
             else
             {
-                bTemp = (byte)(bDataLength - 1);
+                bTemp = (byte)(bExpectedReplyLength - 1);
             }
             abDestBuffer[0] = (byte)(bTemp & 0x0F); // data lenth -1
             abDestBuffer[0] |= (byte)PS2000_DIRECTION.TODEVICE << 4; // Direction
@@ -135,9 +167,24 @@ namespace EAPowerPS2000BRemoteControl
             abDestBuffer[1] = (byte)PS2000_DEVICENODE.OUTPUT1;
 
             // Build Object parameter [2]
+            abDestBuffer[2] = dObjectCode;
 
+            // Build 16 bit checksum [3..4]
+            uwChecksum = (UInt16)((abDestBuffer[0] + abDestBuffer[1] + abDestBuffer[2]) & 0xFFFF);
+            abDestBuffer[3] = (byte)((uwChecksum & 0xFF00) >> 8); // MS Byte
+            abDestBuffer[4] = (byte)(uwChecksum & 0x00FF); // LS Byte
 
+            return iLengthNBytes;
         }
+
+        private void PS2000_GetActualValues()
+        {
+            int iLengthNBytes;
+
+            iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.ACTSTATUS, 6);
+            serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
+        }
+
 
         private bool PS2000_GetOututEnabledState()
         {
@@ -172,6 +219,24 @@ namespace EAPowerPS2000BRemoteControl
             if (serialPort1.IsOpen)
             {
                 serialPort1.Close();
+            }
+        }
+
+        // Callback when data received
+        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            serialPort1.Read(mabRxBuffer, 0, 11);
+            switch (mabRxBuffer[2])
+            {
+                case (byte)PS2000_OBJECT.ACTSTATUS:
+                    // call the UI function in an other thread
+                    this.BeginInvoke(new MethodInvoker(delegate
+                    {
+                        updateActualValueFieldsFromReply(mabRxBuffer);
+                    //}));
+                    break;
+                default:
+                    break;
             }
         }
     }
