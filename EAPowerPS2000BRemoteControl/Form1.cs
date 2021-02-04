@@ -22,11 +22,31 @@ namespace EAPowerPS2000BRemoteControl
             txtActVoltage.Text = "-";
             txtTargetCurrent.Text = "0";
             txtTargetVoltage.Text = "0";
+
+            serialPort1.PortName = txtComPort.Text;
+
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
+            if (serialPort1.IsOpen)
+            {
+                lblStatusStr1.Text = "Comport is already open";
+                return;
+            }
+            serialPort1.Open();
+            lblStatusStr1.Text = "Opened port " + serialPort1.PortName;
+        }
 
+        private void btnDisonnect_Click(object sender, EventArgs e)
+        {
+            if (serialPort1.IsOpen)
+            {
+                lblStatusStr1.Text = "Closing port " + serialPort1.PortName;
+                serialPort1.Close();
+                return;
+            }
+            lblStatusStr1.Text = "Comport is already closed";
         }
     }
 }

@@ -29,6 +29,7 @@ namespace EAPowerPS2000BRemoteControl
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -38,15 +39,18 @@ namespace EAPowerPS2000BRemoteControl
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnUpdateActual = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txtTargetVoltage = new System.Windows.Forms.TextBox();
-            this.txtTargetCurrent = new System.Windows.Forms.TextBox();
             this.btnSetTarget = new System.Windows.Forms.Button();
+            this.txtTargetCurrent = new System.Windows.Forms.TextBox();
+            this.txtTargetVoltage = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.txtComPort = new System.Windows.Forms.TextBox();
             this.btnConnect = new System.Windows.Forms.Button();
+            this.txtComPort = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblStatusStr1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
+            this.btnDisconnect = new System.Windows.Forms.Button();
+            this.chkOutputEnabled = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -128,6 +132,7 @@ namespace EAPowerPS2000BRemoteControl
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.chkOutputEnabled);
             this.groupBox2.Controls.Add(this.btnSetTarget);
             this.groupBox2.Controls.Add(this.txtTargetCurrent);
             this.groupBox2.Controls.Add(this.txtTargetVoltage);
@@ -135,24 +140,10 @@ namespace EAPowerPS2000BRemoteControl
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Location = new System.Drawing.Point(12, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(239, 101);
+            this.groupBox2.Size = new System.Drawing.Size(239, 146);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Target Values";
-            // 
-            // txtTargetVoltage
-            // 
-            this.txtTargetVoltage.Location = new System.Drawing.Point(126, 19);
-            this.txtTargetVoltage.Name = "txtTargetVoltage";
-            this.txtTargetVoltage.Size = new System.Drawing.Size(100, 20);
-            this.txtTargetVoltage.TabIndex = 2;
-            // 
-            // txtTargetCurrent
-            // 
-            this.txtTargetCurrent.Location = new System.Drawing.Point(126, 45);
-            this.txtTargetCurrent.Name = "txtTargetCurrent";
-            this.txtTargetCurrent.Size = new System.Drawing.Size(100, 20);
-            this.txtTargetCurrent.TabIndex = 2;
             // 
             // btnSetTarget
             // 
@@ -163,17 +154,49 @@ namespace EAPowerPS2000BRemoteControl
             this.btnSetTarget.Text = "Set";
             this.btnSetTarget.UseVisualStyleBackColor = true;
             // 
+            // txtTargetCurrent
+            // 
+            this.txtTargetCurrent.Location = new System.Drawing.Point(126, 45);
+            this.txtTargetCurrent.Name = "txtTargetCurrent";
+            this.txtTargetCurrent.Size = new System.Drawing.Size(100, 20);
+            this.txtTargetCurrent.TabIndex = 2;
+            // 
+            // txtTargetVoltage
+            // 
+            this.txtTargetVoltage.Location = new System.Drawing.Point(126, 19);
+            this.txtTargetVoltage.Name = "txtTargetVoltage";
+            this.txtTargetVoltage.Size = new System.Drawing.Size(100, 20);
+            this.txtTargetVoltage.TabIndex = 2;
+            // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.btnDisconnect);
             this.groupBox3.Controls.Add(this.btnConnect);
             this.groupBox3.Controls.Add(this.txtComPort);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(12, 119);
+            this.groupBox3.Location = new System.Drawing.Point(280, 119);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(200, 76);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Communication";
+            // 
+            // btnConnect
+            // 
+            this.btnConnect.Location = new System.Drawing.Point(9, 47);
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.Size = new System.Drawing.Size(75, 23);
+            this.btnConnect.TabIndex = 2;
+            this.btnConnect.Text = "Connect";
+            this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
+            // 
+            // txtComPort
+            // 
+            this.txtComPort.Location = new System.Drawing.Point(94, 19);
+            this.txtComPort.Name = "txtComPort";
+            this.txtComPort.Size = new System.Drawing.Size(100, 20);
+            this.txtComPort.TabIndex = 1;
             // 
             // label5
             // 
@@ -184,38 +207,41 @@ namespace EAPowerPS2000BRemoteControl
             this.label5.TabIndex = 0;
             this.label5.Text = "COM Port";
             // 
-            // txtComPort
-            // 
-            this.txtComPort.Location = new System.Drawing.Point(94, 19);
-            this.txtComPort.Name = "txtComPort";
-            this.txtComPort.Size = new System.Drawing.Size(100, 20);
-            this.txtComPort.TabIndex = 1;
-            // 
-            // btnConnect
-            // 
-            this.btnConnect.Location = new System.Drawing.Point(119, 45);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(75, 23);
-            this.btnConnect.TabIndex = 2;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.lblStatusStr1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 215);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(499, 22);
             this.statusStrip1.TabIndex = 7;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // toolStripStatusLabel1
+            // lblStatusStr1
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            this.lblStatusStr1.Name = "lblStatusStr1";
+            this.lblStatusStr1.Size = new System.Drawing.Size(118, 17);
+            this.lblStatusStr1.Text = "toolStripStatusLabel1";
+            // 
+            // btnDisconnect
+            // 
+            this.btnDisconnect.Location = new System.Drawing.Point(109, 47);
+            this.btnDisconnect.Name = "btnDisconnect";
+            this.btnDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.btnDisconnect.TabIndex = 2;
+            this.btnDisconnect.Text = "Disconnect";
+            this.btnDisconnect.UseVisualStyleBackColor = true;
+            this.btnDisconnect.Click += new System.EventHandler(this.btnDisonnect_Click);
+            // 
+            // chkOutputEnabled
+            // 
+            this.chkOutputEnabled.AutoSize = true;
+            this.chkOutputEnabled.Location = new System.Drawing.Point(6, 123);
+            this.chkOutputEnabled.Name = "chkOutputEnabled";
+            this.chkOutputEnabled.Size = new System.Drawing.Size(100, 17);
+            this.chkOutputEnabled.TabIndex = 4;
+            this.chkOutputEnabled.Text = "Output Enabled";
+            this.chkOutputEnabled.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -260,7 +286,10 @@ namespace EAPowerPS2000BRemoteControl
         private System.Windows.Forms.TextBox txtComPort;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusStr1;
+        private System.IO.Ports.SerialPort serialPort1;
+        private System.Windows.Forms.Button btnDisconnect;
+        private System.Windows.Forms.CheckBox chkOutputEnabled;
     }
 }
 
