@@ -174,9 +174,9 @@ namespace EAPowerPS2000BRemoteControl
             this.groupBox3.Controls.Add(this.btnConnect);
             this.groupBox3.Controls.Add(this.txtComPort);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(280, 119);
+            this.groupBox3.Location = new System.Drawing.Point(257, 119);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 76);
+            this.groupBox3.Size = new System.Drawing.Size(223, 76);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Communication";
@@ -254,6 +254,7 @@ namespace EAPowerPS2000BRemoteControl
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
