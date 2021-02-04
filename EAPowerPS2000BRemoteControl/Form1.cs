@@ -39,7 +39,8 @@ namespace EAPowerPS2000BRemoteControl
             SETCURRENT = 51, // word
             CONTROL = 54, // byte, byte
             ACTSTATUS = 71, // byte,byte,word, word
-            MOMSTATUS = 72, // byte,byte,word, word 
+            MOMSTATUS = 72, // byte,byte,word, word
+            ACK = 0xFF,
         }
 
         enum PS2000_CASTTYPE
@@ -97,6 +98,13 @@ namespace EAPowerPS2000BRemoteControl
             txtActVoltage.Text = "-";
             txtTargetCurrent.Text = "0";
             txtTargetVoltage.Text = "0";
+            rbRemoteEnabled.Enabled = false;
+
+            btnSetTarget.Enabled = false;
+            btnUpdateActual.Enabled = false;
+            chkERemoteEnabled.Enabled = false;
+            chkOutputEnabled.Enabled = false;
+
 
             // setup serial port.
             serialPort1.PortName = txtComPort.Text;
@@ -120,6 +128,10 @@ namespace EAPowerPS2000BRemoteControl
             serialPort1.Open();
             lblStatusStr1.Text = "Opened port " + serialPort1.PortName;
 
+            btnSetTarget.Enabled = true;
+            btnUpdateActual.Enabled = true;
+            chkERemoteEnabled.Enabled = true;
+            chkOutputEnabled.Enabled = true;
             PS2000_GetActualValues();
         }
 
@@ -129,25 +141,53 @@ namespace EAPowerPS2000BRemoteControl
             {
                 lblStatusStr1.Text = "Closing port " + serialPort1.PortName;
                 serialPort1.Close();
+                btnSetTarget.Enabled = false;
+                btnUpdateActual.Enabled = false;
+                chkERemoteEnabled.Enabled = false;
+                chkOutputEnabled.Enabled = false;
                 return;
             }
-            lblStatusStr1.Text = "Comport is already closed";
+            lblStatusStr1.Text = "Comport is already closed"; 
         }
 
         private void updateActualValueFieldsFromReply(byte[] abBuffer)
         {
             UInt16 uwTemp = 0;
 
-            uwTemp = (UInt16)(abBuffer[4] | (abBuffer[5] << 8));
-            txtActVoltage.Text = PS2000_ConvertToRealValue(uwTemp, mdFullScaleVoltage).ToString();
+            // Actual voltage
+            uwTemp = (UInt16)(abBuffer[6] | (abBuffer[5] << 8));
+            txtActVoltage.Text = PS2000_ConvertToRealValue(uwTemp, mdFullScaleVoltage).ToString("0.00") + " V";
+            // Actual current
+            uwTemp = (UInt16)(abBuffer[8] | (abBuffer[7] << 8));
+            txtActCurrent.Text = PS2000_ConvertToRealValue(uwTemp, mdFullScaleCurrent).ToString("0.00") + " A";
+            // Actual remote state
+            if (abBuffer[3] == 0)
+            {
+                // Remote control is disabled
+                rbRemoteEnabled.Checked = false;
+            }
+            else
+            {
+                if (abBuffer[3] == 1)
+                {
+                    // remote is enabled
+                    rbRemoteEnabled.Checked = true;
+                }
+            }
         }
 
+        private void updateActualStatusStripFromReply(byte[] abBuffer)
+        {
+            lblStatusStr1.Text = "PS2000 error code = " + abBuffer[3].ToString("0x00");
+        }
 
-        private int PS2000_BuildQueryTelegramToDevice(byte[] abDestBuffer, byte dObjectCode, byte bExpectedReplyLength)
+        // If "byte[] abData" == null no data is inserted and is considered as "PS2000_TRANSMISSIONTYPE.QUERYDATA"
+        private int PS2000_BuildQueryTelegramToDevice(byte[] abDestBuffer, byte dObjectCode, byte bExpectedReplyLength, byte[] abData, byte bDataLength)
         {
             byte bTemp = 0;
             UInt16 uwChecksum = 0;
-            int iLengthNBytes = 5;
+            int iByteIndex = 0;
+            int iDataChecksum = 0;
 
             // Build start delimiter [0]
             if (bExpectedReplyLength == 0)
@@ -158,42 +198,54 @@ namespace EAPowerPS2000BRemoteControl
             {
                 bTemp = (byte)(bExpectedReplyLength - 1);
             }
-            abDestBuffer[0] = (byte)(bTemp & 0x0F); // data lenth -1
-            abDestBuffer[0] |= (byte)PS2000_DIRECTION.TODEVICE << 4; // Direction
-            abDestBuffer[0] |= (byte)PS2000_CASTTYPE.QUERY << 5; // Cast type
-            abDestBuffer[0] |= (byte)PS2000_TRANSMISSIONTYPE.QUERYDATA << 6; // Transmission type
+            abDestBuffer[iByteIndex] = (byte)(bTemp & 0x0F); // expecte reply data lenth -1
+            abDestBuffer[iByteIndex] |= (byte)PS2000_DIRECTION.TODEVICE << 4; // Direction
+            abDestBuffer[iByteIndex] |= (byte)PS2000_CASTTYPE.QUERY << 5; // Cast type
+            if (abData != null)
+            {
+                abDestBuffer[iByteIndex] |= (byte)PS2000_TRANSMISSIONTYPE.SENDDATA << 6; // Transmission type
+            }
+            else
+            {
+                abDestBuffer[iByteIndex] |= (byte)PS2000_TRANSMISSIONTYPE.QUERYDATA << 6; // Transmission type
+            }
 
             // Build device node parameter [1]
-            abDestBuffer[1] = (byte)PS2000_DEVICENODE.OUTPUT1;
+            iByteIndex++;
+            abDestBuffer[iByteIndex] = (byte)PS2000_DEVICENODE.OUTPUT1;
 
             // Build Object parameter [2]
-            abDestBuffer[2] = dObjectCode;
+            iByteIndex++;
+            abDestBuffer[iByteIndex] = dObjectCode;
+
+            if (abData != null)
+            {
+                for (int i = 0; i < bDataLength; i++)
+                {
+                    iByteIndex++;
+                    abDestBuffer[iByteIndex] = abData[i];
+                    iDataChecksum += abData[i];
+                }
+            }
 
             // Build 16 bit checksum [3..4]
-            uwChecksum = (UInt16)((abDestBuffer[0] + abDestBuffer[1] + abDestBuffer[2]) & 0xFFFF);
-            abDestBuffer[3] = (byte)((uwChecksum & 0xFF00) >> 8); // MS Byte
-            abDestBuffer[4] = (byte)(uwChecksum & 0x00FF); // LS Byte
+            uwChecksum = (UInt16)((abDestBuffer[0] + abDestBuffer[1] + abDestBuffer[2] + iDataChecksum) & 0xFFFF);
+            iByteIndex++;
+            abDestBuffer[iByteIndex] = (byte)((uwChecksum & 0xFF00) >> 8); // MS Byte
+            iByteIndex++;
+            abDestBuffer[iByteIndex] = (byte)(uwChecksum & 0x00FF); // LS Byte
 
-            return iLengthNBytes;
+            return (iByteIndex + 1);
         }
 
         private void PS2000_GetActualValues()
         {
             int iLengthNBytes;
 
-            iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.ACTSTATUS, 6);
+            iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.ACTSTATUS, 6, null, 0);
             serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
         }
 
-
-        private bool PS2000_GetOututEnabledState()
-        {
-            bool biReturnValue = false;
-
-
-
-            return biReturnValue;
-        }
 
         private double PS2000_ConvertToRealValue(UInt16 uwRawPercValue, double dFullScaleValue)
         {
@@ -233,10 +285,64 @@ namespace EAPowerPS2000BRemoteControl
                     this.BeginInvoke(new MethodInvoker(delegate
                     {
                         updateActualValueFieldsFromReply(mabRxBuffer);
-                    //}));
+                    }));
                     break;
+
+                case (byte)PS2000_OBJECT.ACK:
+                    // call the UI function in an other thread
+                    this.BeginInvoke(new MethodInvoker(delegate
+                    {
+                        updateActualStatusStripFromReply(mabRxBuffer);
+                    }));
+                    break;
+
                 default:
                     break;
+            }
+        }
+
+        private void btnUpdateActual_Click(object sender, EventArgs e)
+        {
+            PS2000_GetActualValues();
+        }
+
+        private void chkERemoteEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            int iLengthNBytes;
+
+            if (chkERemoteEnabled.Checked)
+            {
+                // send command to enable remote
+                mabDataBuffer[0] = 0x10;
+                mabDataBuffer[1] = 0x10;
+                iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.CONTROL, 2, mabDataBuffer, 2);
+                serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
+            }
+            else
+            {
+                // send command to disable remote
+                mabDataBuffer[0] = 0x10;
+                mabDataBuffer[1] = 0x00;
+                iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.CONTROL, 2, mabDataBuffer, 2);
+                serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
+            }
+        }
+
+        private void btnSetTarget_Click(object sender, EventArgs e)
+        {
+            int iLengthNBytes;
+            double dTemp;
+            UInt16 uwVoltPercValue = 0;
+            UInt16 uwAmpPercValue = 0;
+
+            if (Double.TryParse(txtTargetVoltage.Text, out dTemp))
+            {
+                uwVoltPercValue = 
+            }
+            else
+            {
+                lblStatusStr1.Text = "Invalid value in Target voltage field";
+                return;
             }
         }
     }
