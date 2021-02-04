@@ -98,7 +98,8 @@ namespace EAPowerPS2000BRemoteControl
             txtActVoltage.Text = "-";
             txtTargetCurrent.Text = "1";
             txtTargetVoltage.Text = "5";
-            rbRemoteEnabled.Enabled = false;
+            chkQOutput.Enabled = false;
+            chkQRemote.Enabled = false;
 
             btnSetTarget.Enabled = false;
             btnUpdateActual.Enabled = false;
@@ -171,14 +172,29 @@ namespace EAPowerPS2000BRemoteControl
             if (abBuffer[3] == 0)
             {
                 // Remote control is disabled
-                rbRemoteEnabled.Checked = false;
+                chkQRemote.Checked = false;
             }
             else
             {
                 if (abBuffer[3] == 1)
                 {
                     // remote is enabled
-                    rbRemoteEnabled.Checked = true;
+                    chkQRemote.Checked = true;
+                }
+            }
+
+            // Actual output state
+            if ((abBuffer[4] & 0x01) == 0)
+            {
+                // Output is disabled
+                chkQOutput.Checked = false;
+            }
+            else
+            {
+                if ((abBuffer[4] & 0x01) == 1)
+                {
+                    // routput is enabled
+                    chkQOutput.Checked = true;
                 }
             }
         }
@@ -375,6 +391,28 @@ namespace EAPowerPS2000BRemoteControl
             mabDataBuffer[1] = (byte)(uwAmpPercValue & 0x00FF);
             iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.SETCURRENT, 2, mabDataBuffer, 2);
             serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
+        }
+
+        private void chkOutputEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            int iLengthNBytes;
+
+            if (chkOutputEnabled.Checked)
+            {
+                // send command to enable output
+                mabDataBuffer[0] = 0x01;
+                mabDataBuffer[1] = 0x01;
+                iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.CONTROL, 2, mabDataBuffer, 2);
+                serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
+            }
+            else
+            {
+                // send command to disable output
+                mabDataBuffer[0] = 0x01;
+                mabDataBuffer[1] = 0x00;
+                iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.CONTROL, 2, mabDataBuffer, 2);
+                serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
+            }
         }
     }
 }

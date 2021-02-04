@@ -37,7 +37,6 @@ namespace EAPowerPS2000BRemoteControl
             this.txtActVoltage = new System.Windows.Forms.TextBox();
             this.txtActCurrent = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rbRemoteEnabled = new System.Windows.Forms.RadioButton();
             this.btnUpdateActual = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.chkERemoteEnabled = new System.Windows.Forms.CheckBox();
@@ -55,6 +54,8 @@ namespace EAPowerPS2000BRemoteControl
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.label6 = new System.Windows.Forms.Label();
             this.txtActPower = new System.Windows.Forms.TextBox();
+            this.chkQRemote = new System.Windows.Forms.CheckBox();
+            this.chkQOutput = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -113,9 +114,10 @@ namespace EAPowerPS2000BRemoteControl
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chkQRemote);
+            this.groupBox1.Controls.Add(this.chkQOutput);
             this.groupBox1.Controls.Add(this.txtActPower);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.rbRemoteEnabled);
             this.groupBox1.Controls.Add(this.btnUpdateActual);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.txtActCurrent);
@@ -123,25 +125,14 @@ namespace EAPowerPS2000BRemoteControl
             this.groupBox1.Controls.Add(this.txtActVoltage);
             this.groupBox1.Location = new System.Drawing.Point(257, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(223, 165);
+            this.groupBox1.Size = new System.Drawing.Size(223, 219);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Actual Values";
             // 
-            // rbRemoteEnabled
-            // 
-            this.rbRemoteEnabled.AutoSize = true;
-            this.rbRemoteEnabled.Location = new System.Drawing.Point(34, 109);
-            this.rbRemoteEnabled.Name = "rbRemoteEnabled";
-            this.rbRemoteEnabled.Size = new System.Drawing.Size(104, 17);
-            this.rbRemoteEnabled.TabIndex = 5;
-            this.rbRemoteEnabled.TabStop = true;
-            this.rbRemoteEnabled.Text = "Remote Enabled";
-            this.rbRemoteEnabled.UseVisualStyleBackColor = true;
-            // 
             // btnUpdateActual
             // 
-            this.btnUpdateActual.Location = new System.Drawing.Point(136, 132);
+            this.btnUpdateActual.Location = new System.Drawing.Point(136, 190);
             this.btnUpdateActual.Name = "btnUpdateActual";
             this.btnUpdateActual.Size = new System.Drawing.Size(75, 23);
             this.btnUpdateActual.TabIndex = 4;
@@ -168,7 +159,7 @@ namespace EAPowerPS2000BRemoteControl
             // chkERemoteEnabled
             // 
             this.chkERemoteEnabled.AutoSize = true;
-            this.chkERemoteEnabled.Location = new System.Drawing.Point(1, 115);
+            this.chkERemoteEnabled.Location = new System.Drawing.Point(6, 115);
             this.chkERemoteEnabled.Name = "chkERemoteEnabled";
             this.chkERemoteEnabled.Size = new System.Drawing.Size(105, 17);
             this.chkERemoteEnabled.TabIndex = 5;
@@ -185,6 +176,7 @@ namespace EAPowerPS2000BRemoteControl
             this.chkOutputEnabled.TabIndex = 4;
             this.chkOutputEnabled.Text = "Output Enabled";
             this.chkOutputEnabled.UseVisualStyleBackColor = true;
+            this.chkOutputEnabled.CheckedChanged += new System.EventHandler(this.chkOutputEnabled_CheckedChanged);
             // 
             // btnSetTarget
             // 
@@ -216,7 +208,7 @@ namespace EAPowerPS2000BRemoteControl
             this.groupBox3.Controls.Add(this.btnConnect);
             this.groupBox3.Controls.Add(this.txtComPort);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(257, 183);
+            this.groupBox3.Location = new System.Drawing.Point(12, 183);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(223, 76);
             this.groupBox3.TabIndex = 6;
@@ -263,7 +255,7 @@ namespace EAPowerPS2000BRemoteControl
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatusStr1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 271);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 274);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(499, 22);
             this.statusStrip1.TabIndex = 7;
@@ -295,11 +287,32 @@ namespace EAPowerPS2000BRemoteControl
             this.txtActPower.Size = new System.Drawing.Size(100, 20);
             this.txtActPower.TabIndex = 7;
             // 
+            // chkQRemote
+            // 
+            this.chkQRemote.AutoSize = true;
+            this.chkQRemote.Location = new System.Drawing.Point(28, 115);
+            this.chkQRemote.Name = "chkQRemote";
+            this.chkQRemote.Size = new System.Drawing.Size(105, 17);
+            this.chkQRemote.TabIndex = 5;
+            this.chkQRemote.Text = "Remote Enabled";
+            this.chkQRemote.UseVisualStyleBackColor = true;
+            this.chkQRemote.CheckedChanged += new System.EventHandler(this.chkERemoteEnabled_CheckedChanged);
+            // 
+            // chkQOutput
+            // 
+            this.chkQOutput.AutoSize = true;
+            this.chkQOutput.Location = new System.Drawing.Point(28, 138);
+            this.chkQOutput.Name = "chkQOutput";
+            this.chkQOutput.Size = new System.Drawing.Size(100, 17);
+            this.chkQOutput.TabIndex = 4;
+            this.chkQOutput.Text = "Output Enabled";
+            this.chkQOutput.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(499, 293);
+            this.ClientSize = new System.Drawing.Size(499, 296);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -344,9 +357,10 @@ namespace EAPowerPS2000BRemoteControl
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.CheckBox chkOutputEnabled;
         private System.Windows.Forms.CheckBox chkERemoteEnabled;
-        private System.Windows.Forms.RadioButton rbRemoteEnabled;
         private System.Windows.Forms.TextBox txtActPower;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox chkQRemote;
+        private System.Windows.Forms.CheckBox chkQOutput;
     }
 }
 
