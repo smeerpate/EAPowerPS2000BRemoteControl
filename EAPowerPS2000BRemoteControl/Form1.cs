@@ -96,8 +96,8 @@ namespace EAPowerPS2000BRemoteControl
             txtActCurrent.ReadOnly = true;
             txtActCurrent.Text = "-";
             txtActVoltage.Text = "-";
-            txtTargetCurrent.Text = "0";
-            txtTargetVoltage.Text = "0";
+            txtTargetCurrent.Text = "1";
+            txtTargetVoltage.Text = "5";
             rbRemoteEnabled.Enabled = false;
 
             btnSetTarget.Enabled = false;
@@ -153,13 +153,20 @@ namespace EAPowerPS2000BRemoteControl
         private void updateActualValueFieldsFromReply(byte[] abBuffer)
         {
             UInt16 uwTemp = 0;
+            double dVoltage = 0.0;
+            double dCurrent = 0.0;
 
             // Actual voltage
             uwTemp = (UInt16)(abBuffer[6] | (abBuffer[5] << 8));
-            txtActVoltage.Text = PS2000_ConvertToRealValue(uwTemp, mdFullScaleVoltage).ToString("0.00") + " V";
+            dVoltage = PS2000_ConvertToRealValue(uwTemp, mdFullScaleVoltage);
+            txtActVoltage.Text = dVoltage.ToString("0.00") + " V";
             // Actual current
             uwTemp = (UInt16)(abBuffer[8] | (abBuffer[7] << 8));
-            txtActCurrent.Text = PS2000_ConvertToRealValue(uwTemp, mdFullScaleCurrent).ToString("0.00") + " A";
+            dCurrent = PS2000_ConvertToRealValue(uwTemp, mdFullScaleCurrent);
+            txtActCurrent.Text = dCurrent.ToString("0.00") + " A";
+
+            txtActPower.Text = (dCurrent * dVoltage).ToString("0.00") + " W";
+
             // Actual remote state
             if (abBuffer[3] == 0)
             {
@@ -335,15 +342,39 @@ namespace EAPowerPS2000BRemoteControl
             UInt16 uwVoltPercValue = 0;
             UInt16 uwAmpPercValue = 0;
 
+            txtTargetVoltage.Text = txtTargetVoltage.Text.Replace('.', ',');
+            txtTargetCurrent.Text = txtTargetCurrent.Text.Replace('.', ',');
+
             if (Double.TryParse(txtTargetVoltage.Text, out dTemp))
             {
-                uwVoltPercValue = 
+                uwVoltPercValue = PS2000_ConvertToRawPercValue(dTemp, mdFullScaleVoltage);
             }
             else
             {
                 lblStatusStr1.Text = "Invalid value in Target voltage field";
                 return;
             }
+
+            if (Double.TryParse(txtTargetCurrent.Text, out dTemp))
+            {
+                uwAmpPercValue = PS2000_ConvertToRawPercValue(dTemp, mdFullScaleCurrent);
+                
+            }
+            else
+            {
+                lblStatusStr1.Text = "Invalid value in Target voltage field";
+                return;
+            }
+
+            mabDataBuffer[0] = (byte)((uwVoltPercValue & 0xFF00) >> 8);
+            mabDataBuffer[1] = (byte)(uwVoltPercValue & 0x00FF);
+            iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.SETVOLTAGE, 2, mabDataBuffer, 2);
+            serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
+
+            mabDataBuffer[0] = (byte)((uwAmpPercValue & 0xFF00) >> 8);
+            mabDataBuffer[1] = (byte)(uwAmpPercValue & 0x00FF);
+            iLengthNBytes = PS2000_BuildQueryTelegramToDevice(mabTxBuffer, (byte)PS2000_OBJECT.SETCURRENT, 2, mabDataBuffer, 2);
+            serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
         }
     }
 }
