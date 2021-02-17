@@ -417,7 +417,7 @@ namespace EAPowerPS2000BRemoteControl
 
         private void btnCreateProfile_Click(object sender, EventArgs e)
         {
-            FrmProfiler prf = new FrmProfiler();
+            FrmProfiler prf = new FrmProfiler(txtComPort.Text);
             // close comport if open
             if (serialPort1.IsOpen)
             {
