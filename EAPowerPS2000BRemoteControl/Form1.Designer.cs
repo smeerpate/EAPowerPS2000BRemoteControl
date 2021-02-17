@@ -43,6 +43,7 @@ namespace EAPowerPS2000BRemoteControl
             this.label6 = new System.Windows.Forms.Label();
             this.btnUpdateActual = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnCreateProfile = new System.Windows.Forms.Button();
             this.chkERemoteEnabled = new System.Windows.Forms.CheckBox();
             this.chkOutputEnabled = new System.Windows.Forms.CheckBox();
             this.btnSetTarget = new System.Windows.Forms.Button();
@@ -56,7 +57,6 @@ namespace EAPowerPS2000BRemoteControl
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatusStr1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
-            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -180,7 +180,7 @@ namespace EAPowerPS2000BRemoteControl
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.button1);
+            this.groupBox2.Controls.Add(this.btnCreateProfile);
             this.groupBox2.Controls.Add(this.chkERemoteEnabled);
             this.groupBox2.Controls.Add(this.chkOutputEnabled);
             this.groupBox2.Controls.Add(this.btnSetTarget);
@@ -194,6 +194,16 @@ namespace EAPowerPS2000BRemoteControl
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Target Values";
+            // 
+            // btnCreateProfile
+            // 
+            this.btnCreateProfile.Location = new System.Drawing.Point(9, 190);
+            this.btnCreateProfile.Name = "btnCreateProfile";
+            this.btnCreateProfile.Size = new System.Drawing.Size(139, 23);
+            this.btnCreateProfile.TabIndex = 8;
+            this.btnCreateProfile.Text = "Create profile";
+            this.btnCreateProfile.UseVisualStyleBackColor = true;
+            this.btnCreateProfile.Click += new System.EventHandler(this.btnCreateProfile_Click);
             // 
             // chkERemoteEnabled
             // 
@@ -310,15 +320,6 @@ namespace EAPowerPS2000BRemoteControl
             // 
             this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(9, 190);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(139, 23);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "Create profile";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -372,7 +373,7 @@ namespace EAPowerPS2000BRemoteControl
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.CheckBox chkQRemote;
         private System.Windows.Forms.CheckBox chkQOutput;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnCreateProfile;
     }
 }
 

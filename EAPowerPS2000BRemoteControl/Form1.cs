@@ -414,5 +414,16 @@ namespace EAPowerPS2000BRemoteControl
                 serialPort1.Write(mabTxBuffer, 0, iLengthNBytes);
             }
         }
+
+        private void btnCreateProfile_Click(object sender, EventArgs e)
+        {
+            FrmProfiler prf = new FrmProfiler();
+            // close comport if open
+            if (serialPort1.IsOpen)
+            {
+                serialPort1.Close();
+            }
+            prf.Show();
+        }
     }
 }
