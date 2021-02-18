@@ -44,6 +44,7 @@ namespace EAPowerPS2000BRemoteControl
 
             iCurrentStep = 0;
 
+            msPSU.Connect();
             timer1.Enabled = true;
             btnRun.Enabled = false;
             btnStop.Enabled = true;
@@ -69,9 +70,7 @@ namespace EAPowerPS2000BRemoteControl
                 double.TryParse((string)dataGridView1.Rows[iCurrentStep].Cells["Current"].Value, out dTargetI);
                 try
                 {
-                    msPSU.Connect();
                     msPSU.SetTarget(dTargetV, dTargetI);
-                    msPSU.Disconnect();
                 }
                 catch (Exception TimerExeption)
                 {
@@ -84,9 +83,7 @@ namespace EAPowerPS2000BRemoteControl
             }
             try
             {
-                msPSU.Connect();
                 msPSU.RequestActualValues();
-                msPSU.Disconnect();
             }
             catch (Exception TimerExeption)
             {
@@ -108,6 +105,7 @@ namespace EAPowerPS2000BRemoteControl
             timer1.Enabled = false;
             btnRun.Enabled = true;
             btnStop.Enabled = false;
+            msPSU.Disconnect();
         }
 
         private void updateAbsoluteTimes(DateTime sStart)

@@ -301,6 +301,7 @@ namespace EAPowerPS2000BRemoteControl
             try
             {
                 PS2000Port.Write(mabTxBuffer, 0, iLengthNBytes);
+                System.Threading.Thread.Sleep(200);
             }
             catch (Exception)
             {
@@ -342,6 +343,7 @@ namespace EAPowerPS2000BRemoteControl
             try
             {
                 PS2000Port.Write(mabTxBuffer, 0, iLengthNBytes);
+                System.Threading.Thread.Sleep(200);
             }
             catch (Exception)
             {
@@ -356,6 +358,7 @@ namespace EAPowerPS2000BRemoteControl
             try
             {
                 PS2000Port.Write(mabTxBuffer, 0, iLengthNBytes);
+                System.Threading.Thread.Sleep(200);
             }
             catch (Exception)
             {
