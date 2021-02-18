@@ -15,6 +15,7 @@ namespace EAPowerPS2000BRemoteControl
         public DateTime sStartTime { get; set; }
         public DateTime sCurrentTime { get; set; }
         public int iCurrentStep { get; set; }
+        public int iPreviousStep { get; set; }
 
         private PS2000 msPSU;
 
@@ -37,17 +38,9 @@ namespace EAPowerPS2000BRemoteControl
             }
             sStartTime = DateTime.Now;
             sCurrentTime = sStartTime;
-            resetDataGridViewCellColor();
-
-            updateAbsoluteTimes(sStartTime);
             stsLblIInfo.Text = "Test started on: " + sStartTime.ToString();
 
-            iCurrentStep = 0;
-
-            msPSU.Connect();
-            timer1.Enabled = true;
-            btnRun.Enabled = false;
-            btnStop.Enabled = true;
+            initiateProfile();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -55,15 +48,33 @@ namespace EAPowerPS2000BRemoteControl
             // check current time and look if we need to update psu settings
             sCurrentTime = DateTime.Now;
             stsLblCurrTime.Text = "Current time is: " + sCurrentTime.ToString();
+
             object timeObj = dataGridView1.Rows[iCurrentStep + 1].Cells["AbsoluteTime"].Value;
             DateTime sNextStepTime = DateTime.Parse((string)timeObj);
 
             dataGridView1.Rows[iCurrentStep].DefaultCellStyle.BackColor = Color.GreenYellow;
 
+            // update step counter if needed
             if (DateTime.Compare(sCurrentTime, sNextStepTime) > 0)
             {
                 // time to take the next step...
                 iCurrentStep += 1;
+            }
+
+            // Flow control, Terminate restart?
+            if (iCurrentStep >= dataGridView1.Rows.Count - 1)
+            {
+                terminateProfile();
+                // last step in profile is reached
+                if (chkLoop.Checked)
+                {
+                    initiateProfile();
+                }
+            }
+
+            // update PSU voltage if needed
+            if (iCurrentStep != iPreviousStep)
+            {
                 double dTargetV = 0.0;
                 double dTargetI = 0.0;
                 double.TryParse((string)dataGridView1.Rows[iCurrentStep].Cells["Voltage"].Value, out dTargetV);
@@ -79,8 +90,9 @@ namespace EAPowerPS2000BRemoteControl
                     btnStop.Enabled = false;
                     MessageBox.Show(TimerExeption.Message, "Error");
                 }
-                
             }
+
+
             try
             {
                 msPSU.RequestActualValues();
@@ -98,14 +110,15 @@ namespace EAPowerPS2000BRemoteControl
             txtCurrentCurrent.Text = msPSU.mdLastReceivedCurrentSetting.ToString("0.00");
             txtCurrentVoltage.Text = msPSU.mdLastReceivedVoltageSetting.ToString("0.00");
 
+            
+
+            // update step counters
+            iPreviousStep = iCurrentStep;
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            timer1.Enabled = false;
-            btnRun.Enabled = true;
-            btnStop.Enabled = false;
-            msPSU.Disconnect();
+            terminateProfile();
         }
 
         private void updateAbsoluteTimes(DateTime sStart)
@@ -141,6 +154,29 @@ namespace EAPowerPS2000BRemoteControl
             {
                 row.DefaultCellStyle.BackColor = Color.White;
             }
+        }
+
+        private void terminateProfile()
+        {
+            timer1.Enabled = false;
+            btnRun.Enabled = true;
+            btnStop.Enabled = false;
+            msPSU.Disconnect();
+        }
+
+        private void initiateProfile()
+        {
+            resetDataGridViewCellColor();
+            updateAbsoluteTimes(DateTime.Now);
+
+            // init step counters
+            iCurrentStep = 0;
+            iPreviousStep = -1;
+
+            msPSU.Connect();
+            timer1.Enabled = true;
+            btnRun.Enabled = false;
+            btnStop.Enabled = true;
         }
     }
 }
