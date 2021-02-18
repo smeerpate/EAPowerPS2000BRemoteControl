@@ -49,7 +49,7 @@ namespace EAPowerPS2000BRemoteControl
             sCurrentTime = DateTime.Now;
             stsLblCurrTime.Text = "Current time is: " + sCurrentTime.ToString();
 
-            object timeObj = dataGridView1.Rows[iCurrentStep + 1].Cells["AbsoluteTime"].Value;
+            object timeObj = dataGridView1.Rows[iCurrentStep].Cells["AbsoluteTime"].Value;
             DateTime sNextStepTime = DateTime.Parse((string)timeObj);
 
             dataGridView1.Rows[iCurrentStep].DefaultCellStyle.BackColor = Color.GreenYellow;

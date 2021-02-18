@@ -30,26 +30,26 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.btnRun = new System.Windows.Forms.Button();
             this.chkLoop = new System.Windows.Forms.CheckBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.stsLblIInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.stsLblCurrTime = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtCurrentVoltage = new System.Windows.Forms.TextBox();
             this.txtCurrentCurrent = new System.Windows.Forms.TextBox();
+            this.txtCurrentVoltage = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnStop = new System.Windows.Forms.Button();
             this.RelativeTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Voltage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Current = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AbsoluteTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.stsLblCurrTime = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -62,6 +62,20 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Profile";
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AllowUserToOrderColumns = true;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.RelativeTime,
+            this.Voltage,
+            this.Current,
+            this.AbsoluteTime});
+            this.dataGridView1.Location = new System.Drawing.Point(7, 20);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(763, 363);
+            this.dataGridView1.TabIndex = 0;
             // 
             // btnRun
             // 
@@ -100,19 +114,11 @@
             this.stsLblIInfo.Size = new System.Drawing.Size(118, 17);
             this.stsLblIInfo.Text = "toolStripStatusLabel1";
             // 
-            // dataGridView1
+            // stsLblCurrTime
             // 
-            this.dataGridView1.AllowUserToOrderColumns = true;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.RelativeTime,
-            this.Voltage,
-            this.Current,
-            this.AbsoluteTime});
-            this.dataGridView1.Location = new System.Drawing.Point(7, 20);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(763, 363);
-            this.dataGridView1.TabIndex = 0;
+            this.stsLblCurrTime.Name = "stsLblCurrTime";
+            this.stsLblCurrTime.Size = new System.Drawing.Size(118, 17);
+            this.stsLblCurrTime.Text = "toolStripStatusLabel1";
             // 
             // timer1
             // 
@@ -132,14 +138,21 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Current PSU output";
             // 
-            // label1
+            // txtCurrentCurrent
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Voltage:";
+            this.txtCurrentCurrent.Location = new System.Drawing.Point(70, 39);
+            this.txtCurrentCurrent.Name = "txtCurrentCurrent";
+            this.txtCurrentCurrent.ReadOnly = true;
+            this.txtCurrentCurrent.Size = new System.Drawing.Size(100, 20);
+            this.txtCurrentCurrent.TabIndex = 1;
+            // 
+            // txtCurrentVoltage
+            // 
+            this.txtCurrentVoltage.Location = new System.Drawing.Point(70, 17);
+            this.txtCurrentVoltage.Name = "txtCurrentVoltage";
+            this.txtCurrentVoltage.ReadOnly = true;
+            this.txtCurrentVoltage.Size = new System.Drawing.Size(100, 20);
+            this.txtCurrentVoltage.TabIndex = 1;
             // 
             // label2
             // 
@@ -150,21 +163,14 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Current:";
             // 
-            // txtCurrentVoltage
+            // label1
             // 
-            this.txtCurrentVoltage.Location = new System.Drawing.Point(70, 17);
-            this.txtCurrentVoltage.Name = "txtCurrentVoltage";
-            this.txtCurrentVoltage.ReadOnly = true;
-            this.txtCurrentVoltage.Size = new System.Drawing.Size(100, 20);
-            this.txtCurrentVoltage.TabIndex = 1;
-            // 
-            // txtCurrentCurrent
-            // 
-            this.txtCurrentCurrent.Location = new System.Drawing.Point(70, 39);
-            this.txtCurrentCurrent.Name = "txtCurrentCurrent";
-            this.txtCurrentCurrent.ReadOnly = true;
-            this.txtCurrentCurrent.Size = new System.Drawing.Size(100, 20);
-            this.txtCurrentCurrent.TabIndex = 1;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(18, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Voltage:";
             // 
             // btnStop
             // 
@@ -178,7 +184,7 @@
             // 
             // RelativeTime
             // 
-            this.RelativeTime.HeaderText = "Relative Time [min]";
+            this.RelativeTime.HeaderText = "Duration [min]";
             this.RelativeTime.Name = "RelativeTime";
             // 
             // Voltage
@@ -198,12 +204,6 @@
             this.AbsoluteTime.ReadOnly = true;
             this.AbsoluteTime.Width = 200;
             // 
-            // stsLblCurrTime
-            // 
-            this.stsLblCurrTime.Name = "stsLblCurrTime";
-            this.stsLblCurrTime.Size = new System.Drawing.Size(118, 17);
-            this.stsLblCurrTime.Text = "toolStripStatusLabel1";
-            // 
             // FrmProfiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -218,9 +218,9 @@
             this.Name = "FrmProfiler";
             this.Text = "FrmProfiler";
             this.groupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
@@ -243,10 +243,10 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.ToolStripStatusLabel stsLblCurrTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn RelativeTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn Voltage;
         private System.Windows.Forms.DataGridViewTextBoxColumn Current;
         private System.Windows.Forms.DataGridViewTextBoxColumn AbsoluteTime;
-        private System.Windows.Forms.ToolStripStatusLabel stsLblCurrTime;
     }
 }
